@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 //Generador de id
 import uuid from 'uuid/dist/v4';
+import { useForm } from '../hooks/useForm';
+
 
 export const Formulario = ({ crearCita }) => {
 
     //Crear state de citas
-    const [cita, setCita] = useState({
+    const [inputValues, handleChange, resetForm] = useForm({
         mascota: '',
         propietario: '',
         fecha: '',
@@ -13,18 +15,10 @@ export const Formulario = ({ crearCita }) => {
         sintomas: ''
     });
 
-    const [error, setError] = useState(false);
-
-    //Funcion que se ejecuta cada vez que el usuario escribe un input
-    const handleChange = e => {
-        setCita({
-            ...cita,
-            [e.target.name]: e.target.value
-        });
-    }
-
     //Extraer los valores
-    const { mascota, propietario, fecha, hora, sintomas } = cita;
+    const { mascota, propietario, fecha, hora, sintomas } = inputValues;
+
+    const [error, setError] = useState(false);
 
     //Cuando el usuario presiona enviar cita
     const submitCita = e => {
@@ -41,25 +35,18 @@ export const Formulario = ({ crearCita }) => {
         setError(false);
 
         //Asignar un id
-        cita.id = uuid();
-        console.log(cita);
+        inputValues.id = uuid();
+        console.log(inputValues);
 
         //Crear la cita
-        crearCita(cita);
+        crearCita(inputValues);
 
-        //Reiniciar el form
-        setCita({
-            mascota: '',
-            propietario: '',
-            fecha: '',
-            hora: '',
-            sintomas: ''
-        })
+        //Resetear formulario
+        resetForm()
     }
 
     return (
         <>
-
             {error ? <p className="alerta-error">Todos los campos son obligatorios</p> : null}
             <h2>Crear Cita</h2>
             <form
